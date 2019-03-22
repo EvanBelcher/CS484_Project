@@ -1,0 +1,6 @@
+1. Get artists and songs from billboard
+2. For each song on billboard, get features from spotify
+3. For each song on billboard, get lyrics from genius
+4. For each artist, get each song not on billboard
+5. For each song not on billboard, get features from spotify
+6. For each song not on billboard, get lyrics from genius
