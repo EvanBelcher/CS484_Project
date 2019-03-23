@@ -10,11 +10,10 @@ public class Song {
     public List<ID> artistIDs;
 
     public LinkedList<BillboardPlacement> billboardPlacements;
-    public Integer lengthInSeconds;
-    public SpotifyData spotifyData;
-    public String lyrics;
+    public SpotifyAttributes spotifyAttributes;
+    public GeniusAttributes geniusAttributes;
 
-    public Song(ID songID){
+    public Song(ID songID) {
         this.songID = songID;
         this.billboardPlacements = new LinkedList<>();
     }
@@ -32,14 +31,18 @@ public class Song {
         this.billboardPlacements = new LinkedList<>();
     }
 
-    public Song(ID songID, List<ID> artistIDs, LinkedList<BillboardPlacement> billboardPlacements, Integer lengthInSeconds, SpotifyData spotifyData, String lyrics) {
+    public Song(ID songID, List<ID> artistIDs, LinkedList<BillboardPlacement> billboardPlacements, SpotifyAttributes spotifyAttributes,
+                GeniusAttributes geniusAttributes) {
         this.songID = songID;
         this.artistIDs = artistIDs;
         this.billboardPlacements = billboardPlacements;
-        this.lengthInSeconds = lengthInSeconds;
-        this.spotifyData = spotifyData;
-        this.lyrics = lyrics;
+        this.spotifyAttributes = spotifyAttributes;
+        this.geniusAttributes = geniusAttributes;
         this.billboardPlacements = new LinkedList<>();
+    }
+
+    public String getSearchName() {
+        return this.songID.name + " " + this.artistIDs.get(0).name.toLowerCase().replaceAll("featuring |feat\\. |and ", "");
     }
 
     @Override
@@ -48,9 +51,8 @@ public class Song {
                 "songID=" + songID +
                 ", artistIDs=" + artistIDs +
                 ", billboardPlacements=" + billboardPlacements +
-                ", lengthInSeconds=" + lengthInSeconds +
-                ", spotifyData=" + spotifyData +
-                ", lyrics='" + lyrics + '\'' +
+                ", spotifyAttributes=" + spotifyAttributes +
+                ", geniusAttributes=" + geniusAttributes +
                 '}';
     }
 

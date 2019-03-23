@@ -1,4 +1,3 @@
-import com.google.gson.Gson;
 import data.BillboardPlacement;
 import data.ID;
 import data.Song;
@@ -7,26 +6,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class BillboardScraperWorker implements Runnable {
-    static final List<Integer> BILLBOARD_ERROR_YEARS = Arrays.asList(1966, 1977, 1983, 1994, 2005, 2011);
-
-    static Lock jsoupLock = new ReentrantLock();
+    private static final List<Integer> BILLBOARD_ERROR_YEARS = Arrays.asList(1966, 1977, 1983, 1994, 2005, 2011);
 
     private final int year;
     private List<Song> songs = new ArrayList<>();
 
-    public BillboardScraperWorker(int year) {
+    BillboardScraperWorker(int year) {
         this.year = year;
     }
 
@@ -36,19 +29,14 @@ public class BillboardScraperWorker implements Runnable {
         try {
             Document yearListDocument = Jsoup.connect("https://www.billboard.com/archive/charts/" + year + "/hot-100").get();
             handleYearList(yearListDocument, year);
-            Gson gson = new Gson();
-            Path filePath = Paths.get("billboard_raws/" + year + ".txt");
-            Files.createDirectories(filePath.getParent());
-            BufferedWriter bw = new BufferedWriter(new FileWriter("billboard_raws/" + year + ".txt"));
-            bw.write(gson.toJson(songs));
-            bw.close();
+            Main.writeJSONToFile(songs, "billboard_raws/" + year + ".txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Ending year " + year);
     }
 
-    private void handleYearList(Document yearListDocument, int year) throws IOException {
+    private void handleYearList(Document yearListDocument, int year) {
         Elements weekLinks = yearListDocument.select("body > main > article > div > div > div > table > tbody > tr > td:nth-child(1) > a");
 
         /*
@@ -64,63 +52,28 @@ public class BillboardScraperWorker implements Runnable {
         }
 
         System.out.println("Getting week chart documents");
-        List<Document> weekChartDocuments = weekLinks.parallelStream().map(weekLink -> "https://www.billboard.com" + weekLink.attr("href")).map(url -> {
-            Document weekChartDocument = null;
-            try {
-                weekChartDocument = Jsoup.connect(url).get();
-            } catch (IOException e) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-            }
+        List<Document> weekChartDocuments = weekLinks.parallelStream().map(weekLink -> "https://www.billboard.com" + weekLink.attr("href")).map(url
+                -> {
+            Document weekChartDocument = getDocument(url);
 
             while (weekChartDocument == null || weekChartDocument.getElementsByClass("chart-list-item").isEmpty()) {
-                System.out.println("YES IT WAS NULL!!!");
+                System.out.println("Error in request. Retrying.");
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                try {
-                    weekChartDocument = Jsoup.connect(url).get();
-                } catch (IOException e){
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
+                weekChartDocument = getDocument(url);
             }
             return weekChartDocument;
 
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        }).collect(Collectors.toList());
 
         int week = 1;
         for (Document weekChartDocument : weekChartDocuments) {
             handleWeekChart(weekChartDocument, year, week);
             week++;
         }
-
-//        for (Element weekLink : weekLinks) {
-//            String linkRelURL = weekLink.attr("href");
-//            String weekURL = "https://www.billboard.com" + linkRelURL;
-//            Document weekChartDocument = getHTMLDocument(weekURL);
-//
-//            while (weekChartDocument == null || weekChartDocument.getElementsByClass("chart-list-item").isEmpty()) {
-//                System.out.println("YES IT WAS NULL!!!");
-//                try {
-//                    Thread.sleep(10000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                weekChartDocument = getHTMLDocument(weekURL);
-//            }
-//
-//            handleWeekChart(weekChartDocument, year, week);
-//            week++;
-//        }
     }
 
     private void handleWeekChart(Document weekChartDocument, int year, int week) {
@@ -137,5 +90,18 @@ public class BillboardScraperWorker implements Runnable {
             song.billboardPlacements.add(new BillboardPlacement(year, week, position));
             songs.add(song);
         }
+    }
+
+    private Document getDocument(String url) {
+        try {
+            return Jsoup.connect(url).get();
+        } catch (IOException e) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return null;
     }
 }

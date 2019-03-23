@@ -1,16 +1,12 @@
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import data.Song;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
 public class BillboardDeduper {
-
-    static Gson gson = new Gson();
 
     public static void main(String[] args) throws Exception {
         checkData();
@@ -22,10 +18,7 @@ public class BillboardDeduper {
         int duplicateCount = 0;
         for (int year = 1958; year <= 2019; year++) {
             System.out.println("Starting year " + year);
-            BufferedReader br = new BufferedReader(new FileReader("billboard_raws/" + year + ".txt"));
-            List<Song> songs = gson.fromJson(br, new TypeToken<List<Song>>() {
-            }.getType());
-            br.close();
+            List<Song> songs = Main.readJSONFromFile("billboard_raws/" + year + ".txt", new TypeToken<List<Song>>(){}.getType());
 
             for (Song song : songs) {
                 if (dedupedSongList.contains(song)) {
@@ -52,25 +45,23 @@ public class BillboardDeduper {
             System.out.println();
         }
 
-        BufferedWriter bw = new BufferedWriter(new FileWriter("billboard_deduped_list.txt"));
-        bw.write(gson.toJson(dedupedSongList));
-        bw.close();
+        Main.writeJSONToFile(dedupedSongList, "billboard_deduped_list.txt");
     }
 
     private static void checkData() throws Exception {
         StringJoiner errors = new StringJoiner("\n");
         for (int year = 1958; year <= 2019; year++) {
-            BufferedReader br = new BufferedReader(new FileReader("billboard_raws/" + year + ".txt"));
-            List<Song> songs = gson.fromJson(br, new TypeToken<List<Song>>() {}.getType());
-            br.close();
+            List<Song> songs = Main.readJSONFromFile("billboard_raws/" + year + ".txt", new TypeToken<List<Song>>(){}.getType());
 
             boolean abnormalYear = Arrays.asList(1958, 1976, 1977, 2018, 2019).contains(year);
 
             if (year == 1958 && songs.size() != 22 * 100) { // First year
                 errors.add("Year 1958 does not have 2200 entries. Actual: " + songs.size());
-            } else if (year == 1976 && songs.size() != 5195) { // Abnormal year where the following weeks are each missing one entry: 48, 49, 50, 51, 52
+            } else if (year == 1976 && songs.size() != 5195) { // Abnormal year where the following weeks are each missing one entry: 48, 49, 50,
+                // 51, 52
                 errors.add("Year 1976 does not have 5195 entries. Actual: " + songs.size());
-            } else if (year == 1977 && songs.size() != 5190) { // Abnormal year where the following weeks are each missing one entry: 1, 2, 3, 4, 5, 6, 7, 8, 9, 52
+            } else if (year == 1977 && songs.size() != 5190) { // Abnormal year where the following weeks are each missing one entry: 1, 2, 3, 4,
+                // 5, 6, 7, 8, 9, 52
                 errors.add("Year 1977 does not have 5190 entries. Actual: " + songs.size());
             } else if (year == 2018 && songs.size() != 53 * 100) { // Abnormal year with 53 entries
                 errors.add("Year 2018 does not have 5300 entries. Actual: " + songs.size());
