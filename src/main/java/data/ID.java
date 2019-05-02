@@ -11,10 +11,9 @@ public class ID {
         this.name = name;
     }
 
-    public ID(String name, String spotifyId, String geniusId) {
+    public ID(String name, String spotifyId) {
         this.name = name;
         this.spotifyId = spotifyId;
-        this.geniusId = geniusId;
     }
 
     @Override

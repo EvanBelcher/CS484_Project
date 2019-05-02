@@ -1,18 +1,18 @@
 package data;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Artist {
-    ID artistID;
-    Set<ID> songIds;
+public class Artist implements Comparable<Artist> {
+    public ID artistID;
+    public Set<ID> billboardSongIDs;
+    public Set<ID> nonBillboardSongIDs;
 
-    @Override
-    public String toString() {
-        return "Artist{" +
-                "artistIDs=" + artistID +
-                ", songIds=" + songIds +
-                '}';
+    public Artist(ID artistID) {
+        this.artistID = artistID;
+        billboardSongIDs = new HashSet<>();
+        nonBillboardSongIDs = new HashSet<>();
     }
 
     @Override
@@ -26,5 +26,10 @@ public class Artist {
     @Override
     public int hashCode() {
         return Objects.hash(artistID);
+    }
+
+    @Override
+    public int compareTo(Artist o) {
+        return artistID.spotifyId.compareTo(o.artistID.spotifyId);
     }
 }

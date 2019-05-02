@@ -18,7 +18,7 @@ public class BillboardDeduper {
         int duplicateCount = 0;
         for (int year = 1958; year <= 2019; year++) {
             System.out.println("Starting year " + year);
-            List<Song> songs = Main.readJSONFromFile("billboard_raws/" + year + ".txt", new TypeToken<List<Song>>(){}.getType());
+            List<Song> songs = Main.readJSONFromFile("billboard_raws/" + year + ".txt", new TypeToken<List<Song>>() {}.getType());
 
             for (Song song : songs) {
                 if (dedupedSongList.contains(song)) {
@@ -51,7 +51,7 @@ public class BillboardDeduper {
     private static void checkData() throws Exception {
         StringJoiner errors = new StringJoiner("\n");
         for (int year = 1958; year <= 2019; year++) {
-            List<Song> songs = Main.readJSONFromFile("billboard_raws/" + year + ".txt", new TypeToken<List<Song>>(){}.getType());
+            List<Song> songs = Main.readJSONFromFile("billboard_raws/" + year + ".txt", new TypeToken<List<Song>>() {}.getType());
 
             boolean abnormalYear = Arrays.asList(1958, 1976, 1977, 2018, 2019).contains(year);
 

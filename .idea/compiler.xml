@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="cs_484_project" />
+        <module name="cs_455_project" />
       </profile>
     </annotationProcessing>
   </component>

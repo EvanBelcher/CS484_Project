@@ -21,9 +21,11 @@ public class SpotifyAttributes {
     public int timeSignature; // Nominal
     public double valence; // Numerical
 
-    public SpotifyAttributes(){}
+    public SpotifyAttributes() {}
 
-    public SpotifyAttributes(int durationMs, boolean explicit, int trackNumber, double acousticness, double danceability, double energy, double instrumentalness, int key, double liveness, double loudness, Modality mode, double speechiness, double tempo, int timeSignature, double valence) {
+    public SpotifyAttributes(int durationMs, boolean explicit, int trackNumber, double acousticness, double danceability, double energy,
+                             double instrumentalness, int key, double liveness, double loudness, Modality mode, double speechiness, double tempo,
+                             int timeSignature, double valence) {
         this.durationMs = durationMs;
         this.explicit = explicit;
         this.trackNumber = trackNumber;
@@ -41,13 +43,14 @@ public class SpotifyAttributes {
         this.valence = valence;
     }
 
-    public void setTrackData(int durationMs, boolean explicit, int trackNumber){
+    public void setTrackData(int durationMs, boolean explicit, int trackNumber) {
         this.durationMs = durationMs;
         this.explicit = explicit;
         this.trackNumber = trackNumber;
     }
 
-    public void setFeatureData(double acousticness, double danceability, double energy, double instrumentalness, int key, double liveness, double loudness, Modality mode, double speechiness, double tempo, int timeSignature, double valence){
+    public void setFeatureData(double acousticness, double danceability, double energy, double instrumentalness, int key, double liveness,
+                               double loudness, Modality mode, double speechiness, double tempo, int timeSignature, double valence) {
         this.acousticness = acousticness;
         this.danceability = danceability;
         this.energy = energy;
@@ -108,6 +111,7 @@ public class SpotifyAttributes {
     @Override
     public int hashCode() {
 
-        return Objects.hash(durationMs, explicit, trackNumber, acousticness, danceability, energy, instrumentalness, key, liveness, loudness, mode, speechiness, tempo, timeSignature, valence);
+        return Objects.hash(durationMs, explicit, trackNumber, acousticness, danceability, energy, instrumentalness, key, liveness, loudness, mode,
+                speechiness, tempo, timeSignature, valence);
     }
 }
